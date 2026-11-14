@@ -1,0 +1,17 @@
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/

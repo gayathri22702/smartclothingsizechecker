@@ -1,0 +1,11 @@
+{
+  "name": "smart-clothing-size-checker",
+  "version": "1.0.0",
+  "description": "Smart Clothing Size Checker (VNRVJIET SC-24)",
+  "main": "app.js",
+  "scripts": {
+    "start": "python3 server.py"
+  },
+  "author": "N. Gayathri & Team SC-24",
+  "license": "ISC"
+}

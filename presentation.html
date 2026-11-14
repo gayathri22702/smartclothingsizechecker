@@ -1,0 +1,2640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Clothing Size Checker — Interactive Presentation Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0B0F19;
+      --bg-card: rgba(22, 29, 47, 0.75);
+      --bg-card-hover: rgba(30, 41, 67, 0.9);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(224, 122, 95, 0.4);
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --text-sub: #D1D5DB;
+      --accent-terracotta: #E07A5F;
+      --accent-gold: #F4A261;
+      --accent-teal: #2A9D8F;
+      --accent-emerald: #10B981;
+      --accent-indigo: #6366F1;
+      --accent-blue: #3B82F6;
+      --vnrvjiet-orange: #F59E0B;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      user-select: none;
+    }
+
+    /* Ambient animated mesh backdrop */
+    .ambient-mesh {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .mesh-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.18;
+      animation: floatMesh 18s ease-in-out infinite alternate;
+    }
+    .blob-1 {
+      width: 600px;
+      height: 600px;
+      background: #E07A5F;
+      top: -150px;
+      left: -100px;
+    }
+    .blob-2 {
+      width: 700px;
+      height: 700px;
+      background: #3B82F6;
+      bottom: -200px;
+      right: -150px;
+      animation-duration: 22s;
+      animation-delay: -5s;
+    }
+    .blob-3 {
+      width: 500px;
+      height: 500px;
+      background: #10B981;
+      top: 40%;
+      left: 60%;
+      animation-duration: 25s;
+      animation-delay: -10s;
+    }
+
+    @keyframes floatMesh {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(60px, 40px) scale(1.1); }
+      100% { transform: translate(-40px, 70px) scale(0.95); }
+    }
+
+    /* Top Progress Bar */
+    .top-progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 100;
+    }
+    .top-progress-bar {
+      height: 100%;
+      width: 7.14%;
+      background: linear-gradient(90deg, var(--vnrvjiet-orange), var(--accent-terracotta), var(--accent-emerald));
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+    }
+
+    /* Global Header Bar */
+    .deck-header {
+      position: fixed;
+      top: 4px;
+      left: 0;
+      right: 0;
+      height: 58px;
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 90;
+      background: rgba(11, 15, 25, 0.6);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .header-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+    .header-logo-row img {
+      height: 32px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+    .header-divider {
+      width: 1px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .header-title-wrap h2 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #F9FAFB;
+      text-transform: uppercase;
+    }
+    .header-title-wrap p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .deck-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(224, 122, 95, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid rgba(224, 122, 95, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.4); }
+    }
+    .btn-prototype {
+      background: linear-gradient(135deg, var(--accent-terracotta), #D9532F);
+      color: white;
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(224, 122, 95, 0.3);
+    }
+    .btn-prototype:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(224, 122, 95, 0.45);
+    }
+
+    /* Main Deck Stage */
+    .deck-stage {
+      position: absolute;
+      top: 62px;
+      bottom: 66px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 3.5rem;
+      z-index: 10;
+    }
+
+    /* Individual Slide Frame */
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1260px;
+      height: 100%;
+      max-height: 760px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 24px;
+      padding: 2.75rem 3.25rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      opacity: 0;
+      transform: scale(0.96) translateY(24px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Slide Header */
+    .slide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      position: relative;
+      z-index: 2;
+    }
+    .slide-category-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-gold);
+      background: rgba(244, 162, 97, 0.1);
+      border: 1px solid rgba(244, 162, 97, 0.25);
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+    }
+    .slide-title {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+      margin-top: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .slide-number-tag {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      color: rgba(255, 255, 255, 0.25);
+      font-weight: 600;
+    }
+
+    /* Staggered Animations */
+    .anim-item {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .slide.active .anim-item {
+      animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .slide.active .delay-1 { animation-delay: 0.08s; }
+    .slide.active .delay-2 { animation-delay: 0.16s; }
+    .slide.active .delay-3 { animation-delay: 0.24s; }
+    .slide.active .delay-4 { animation-delay: 0.32s; }
+    .slide.active .delay-5 { animation-delay: 0.40s; }
+    .slide.active .delay-6 { animation-delay: 0.48s; }
+    .slide.active .delay-7 { animation-delay: 0.56s; }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Slide Footer / Caption */
+    .slide-footer-caption {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 0.75rem;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+    .caption-source {
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* =========================================
+       SPECIFIC SLIDE LAYOUTS
+       ========================================= */
+
+    /* SLIDE 1: TITLE HERO */
+    .title-slide-container {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2.5rem;
+      height: 100%;
+      align-items: center;
+    }
+    .title-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .title-logos-bar {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.8rem 1.2rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      width: fit-content;
+    }
+    .title-logos-bar img {
+      height: 48px;
+      object-fit: contain;
+    }
+    .title-main-heading {
+      font-family: var(--font-heading);
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #FFFFFF 30%, var(--accent-gold) 80%, var(--accent-terracotta) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.75rem;
+    }
+    .batch-badge {
+      display: inline-block;
+      width: fit-content;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--vnrvjiet-orange);
+      border: 1.5px solid rgba(245, 158, 11, 0.4);
+      padding: 0.35rem 0.9rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    .guidance-box {
+      margin-top: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-left: 3px solid var(--accent-terracotta);
+      border-radius: 0 10px 10px 0;
+    }
+    .guidance-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+    .guidance-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+    .guidance-dept {
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      margin-top: 0.15rem;
+    }
+
+    .title-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.25rem;
+    }
+    .team-panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 1.5rem 1.75rem;
+    }
+    .team-panel-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-gold);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .team-members-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .team-member-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.85rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      transition: all 0.2s ease;
+    }
+    .team-member-item:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(224, 122, 95, 0.3);
+      transform: translateX(4px);
+    }
+    .member-name {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #FFFFFF;
+    }
+    .member-roll {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+    .college-tagline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      text-align: center;
+      padding: 0.5rem;
+    }
+
+    /* SLIDE 2: TABLE OF CONTENTS */
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem 1.5rem;
+      margin-top: 1rem;
+    }
+    .toc-item {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .toc-item:hover {
+      background: rgba(244, 162, 97, 0.08);
+      border-color: rgba(244, 162, 97, 0.35);
+      transform: translateY(-2px);
+    }
+    .toc-num {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(224, 122, 95, 0.2), rgba(244, 162, 97, 0.2));
+      border: 1px solid rgba(224, 122, 95, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+    }
+    .toc-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    /* SLIDE 3: PROBLEM STATEMENT (Project, Problem, Gap) */
+    .problem-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1rem;
+      height: 100%;
+      align-items: stretch;
+    }
+    .problem-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 18px;
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .problem-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+    .problem-card.card-project {
+      border-top: 4px solid var(--accent-teal);
+    }
+    .problem-card.card-problem {
+      border-top: 4px solid var(--accent-terracotta);
+    }
+    .problem-card.card-gap {
+      border-top: 4px solid var(--accent-gold);
+    }
+    .problem-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .problem-badge-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    .problem-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 0.75rem;
+    }
+    .problem-card-body {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-sub);
+      flex: 1;
+    }
+    .problem-highlight-chip {
+      margin-top: 1.25rem;
+      padding: 0.6rem 0.9rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent-gold);
+    }
+
+    /* SLIDE 4: EMPATHY MAP */
+    .empathy-layout {
+      display: grid;
+      grid-template-columns: 1fr 140px 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 0.75rem;
+      height: 480px;
+      position: relative;
+    }
+    .empathy-quadrant {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .empathy-quadrant:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: scale(1.02);
+    }
+    .quadrant-says { border-top: 3px solid var(--accent-teal); grid-column: 1; grid-row: 1; }
+    .quadrant-thinks { border-top: 3px solid var(--accent-gold); grid-column: 3; grid-row: 1; }
+    .quadrant-does { border-top: 3px solid var(--accent-indigo); grid-column: 1; grid-row: 2; }
+    .quadrant-feels { border-top: 3px solid var(--accent-terracotta); grid-column: 3; grid-row: 2; }
+
+    .quadrant-label {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .quadrant-says .quadrant-label { color: var(--accent-teal); }
+    .quadrant-thinks .quadrant-label { color: var(--accent-gold); }
+    .quadrant-does .quadrant-label { color: var(--accent-indigo); }
+    .quadrant-feels .quadrant-label { color: var(--accent-terracotta); }
+
+    .quadrant-content {
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: var(--text-sub);
+    }
+    .quote-box {
+      font-style: italic;
+      font-size: 1.05rem;
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border-left: 3px solid currentColor;
+    }
+    .empathy-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .empathy-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .empathy-list li::before {
+      content: "•";
+      color: var(--accent-gold);
+      font-weight: bold;
+    }
+
+    .empathy-center-user {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(224, 122, 95, 0.25) 0%, rgba(22, 29, 47, 0) 70%);
+      border-radius: 50%;
+      text-align: center;
+    }
+    .user-avatar-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-terracotta), var(--accent-gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 0 30px rgba(224, 122, 95, 0.4);
+      animation: pulseAvatar 3s ease-in-out infinite;
+    }
+    @keyframes pulseAvatar {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(224, 122, 95, 0.3); }
+      50% { transform: scale(1.08); box-shadow: 0 0 40px rgba(224, 122, 95, 0.6); }
+    }
+    .center-user-label {
+      margin-top: 0.6rem;
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: #FFFFFF;
+    }
+
+    /* SLIDE 5: UN SDGS */
+    .sdg-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+    .sdg-card {
+      border-radius: 20px;
+      padding: 2.25rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .sdg-card:hover {
+      transform: translateY(-5px);
+    }
+    .sdg-card-9 {
+      background: linear-gradient(135deg, rgba(253, 105, 37, 0.15) 0%, rgba(22, 29, 47, 0.8) 100%);
+      border: 1.5px solid rgba(253, 105, 37, 0.4);
+    }
+    .sdg-card-12 {
+      background: linear-gradient(135deg, rgba(207, 141, 42, 0.15) 0%, rgba(22, 29, 47, 0.8) 100%);
+      border: 1.5px solid rgba(207, 141, 42, 0.4);
+    }
+    .sdg-header-badge {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .sdg-icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: white;
+    }
+    .sdg-card-9 .sdg-icon-box { background: #FD6925; }
+    .sdg-card-12 .sdg-icon-box { background: #BF8B2E; }
+    .sdg-header-text h3 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .sdg-header-text p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .sdg-point {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      border-left: 3px solid currentColor;
+    }
+    .sdg-card-9 .sdg-point { color: #FD6925; }
+    .sdg-card-12 .sdg-point { color: #BF8B2E; }
+    .sdg-point h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 0.35rem;
+    }
+    .sdg-point p {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-sub);
+    }
+
+    /* SLIDE 6: DEFINING INSIGHTS TABLE */
+    .insights-table-wrap {
+      margin-top: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .insights-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .insights-table th {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.25rem 1.75rem;
+      font-family: var(--font-heading);
+      font-size: 0.92rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-gold);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .insights-table td {
+      padding: 1.4rem 1.75rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-sub);
+    }
+    .insights-table tr:last-child td {
+      border-bottom: none;
+    }
+    .insights-table tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .need-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .need-primary {
+      background: rgba(224, 122, 95, 0.2);
+      color: var(--accent-terracotta);
+      border: 1px solid rgba(224, 122, 95, 0.4);
+    }
+    .need-secondary {
+      background: rgba(99, 102, 241, 0.2);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+    }
+    .need-latent {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    /* SLIDE 7: POINT OF VIEW */
+    .pov-equation-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+    .pov-block {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.75rem 1.5rem;
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .pov-block-badge {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      padding: 0.25rem 0.8rem;
+      border-radius: 6px;
+    }
+    .badge-user { background: rgba(59, 130, 246, 0.2); color: #60A5FA; }
+    .badge-need { background: rgba(245, 158, 11, 0.2); color: #FBBF24; }
+    .badge-insight { background: rgba(16, 185, 129, 0.2); color: #34D399; }
+    .pov-desc {
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--text-sub);
+    }
+    .pov-operator {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.3);
+    }
+    .pov-final-box {
+      margin-top: 1.5rem;
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, rgba(224, 122, 95, 0.12), rgba(244, 162, 97, 0.12));
+      border: 1.5px solid rgba(224, 122, 95, 0.35);
+      border-radius: 16px;
+    }
+    .pov-statement-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+      color: var(--accent-gold);
+      margin-bottom: 0.5rem;
+    }
+    .pov-statement-text {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: #FFFFFF;
+      font-weight: 500;
+    }
+
+    /* SLIDE 8: IDEATION & MIND MAP */
+    .mindmap-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+      margin-top: 0.5rem;
+      height: 480px;
+    }
+    .mindmap-visual {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mm-node {
+      position: absolute;
+      border-radius: 12px;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+    .mm-node:hover {
+      transform: scale(1.1);
+      z-index: 10;
+    }
+    .mm-hub {
+      background: linear-gradient(135deg, var(--accent-terracotta), var(--accent-gold));
+      color: white;
+      font-size: 0.95rem;
+      padding: 0.9rem 1.3rem;
+      border-radius: 16px;
+      font-family: var(--font-heading);
+      box-shadow: 0 0 35px rgba(224, 122, 95, 0.5);
+      z-index: 5;
+    }
+    .mm-user { top: 12%; left: 8%; background: rgba(59, 130, 246, 0.2); border: 1px solid #3B82F6; color: #93C5FD; }
+    .mm-prod { top: 12%; right: 8%; background: rgba(245, 158, 11, 0.2); border: 1px solid #F59E0B; color: #FCD34D; }
+    .mm-tech { bottom: 12%; left: 8%; background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #6EE7B7; }
+    .mm-fit  { bottom: 12%; right: 8%; background: rgba(139, 92, 246, 0.2); border: 1px solid #8B5CF6; color: #C4B5FD; }
+    .mm-out  { top: 50%; right: 3%; transform: translateY(-50%); background: rgba(236, 72, 153, 0.2); border: 1px solid #EC4899; color: #F472B6; }
+
+    .mindmap-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .ideation-method-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+    }
+    .ideation-method-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-gold);
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+    .ideation-method-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+    .selected-idea-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(22, 29, 47, 0.8));
+      border: 1.5px solid rgba(16, 185, 129, 0.35);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+    .selected-idea-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #34D399;
+      margin-bottom: 0.6rem;
+    }
+    .selected-idea-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-sub);
+    }
+
+    /* SLIDE 9: SOLUTION PROTOTYPE WORKFLOW */
+    .prototype-flow-container {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .proto-quote-banner {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--accent-gold);
+      padding: 0.85rem 1.25rem;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: #FFFFFF;
+    }
+    .workflow-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.75rem;
+    }
+    .workflow-step-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 1.1rem 0.9rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .workflow-step-card:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(224, 122, 95, 0.4);
+      transform: translateY(-4px);
+    }
+    .step-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-terracotta), var(--accent-gold));
+      color: white;
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+    .step-card-title {
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 0.45rem;
+      line-height: 1.25;
+    }
+    .step-card-desc {
+      font-size: 0.74rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    /* SLIDE 10: MAIN FEATURES */
+    .features-matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.1rem;
+      margin-top: 1rem;
+    }
+    .feature-matrix-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 1.15rem 1.25rem;
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      transition: all 0.25s ease;
+    }
+    .feature-matrix-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(244, 162, 97, 0.3);
+      transform: translateY(-2px);
+    }
+    .feature-num-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--accent-gold);
+      flex-shrink: 0;
+    }
+    .feature-text-wrap h4 {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 0.3rem;
+    }
+    .feature-text-wrap p {
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    /* SLIDE 11: INNOVATION (DVF) */
+    .dvf-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .dvf-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.3s ease;
+    }
+    .dvf-card:hover {
+      transform: translateY(-4px);
+    }
+    .dvf-card.card-d { border-top: 4px solid var(--accent-terracotta); }
+    .dvf-card.card-v { border-top: 4px solid var(--accent-gold); }
+    .dvf-card.card-f { border-top: 4px solid var(--accent-teal); }
+
+    .dvf-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .dvf-big-letter {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: white;
+    }
+    .card-d .dvf-big-letter { background: var(--accent-terracotta); }
+    .card-v .dvf-big-letter { background: var(--accent-gold); }
+    .card-f .dvf-big-letter { background: var(--accent-teal); }
+    .dvf-title-group h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .dvf-title-group span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .dvf-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .dvf-list li {
+      font-size: 0.84rem;
+      line-height: 1.45;
+      color: var(--text-sub);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .dvf-list li::before {
+      content: "✓";
+      color: var(--accent-gold);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* SLIDE 12: DESIGN FOR ENVIRONMENT */
+    .eco-benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem;
+      margin-top: 1.5rem;
+    }
+    .eco-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(22, 29, 47, 0.7));
+      border: 1.5px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 2.25rem 1.75rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s ease;
+    }
+    .eco-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px -10px rgba(16, 185, 129, 0.2);
+    }
+    .eco-icon-bubble {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1.5px solid rgba(16, 185, 129, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    .eco-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #34D399;
+      letter-spacing: 0.04em;
+    }
+    .eco-card p {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text-sub);
+    }
+
+    /* SLIDE 13: MENTOR & TEAM */
+    .mentor-team-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2rem;
+      margin-top: 0.5rem;
+      align-items: center;
+      height: 480px;
+    }
+    .mentor-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .mentor-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 1.15rem 1.35rem;
+    }
+    .mentor-box-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-gold);
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+    .mentor-box-content {
+      font-size: 0.86rem;
+      line-height: 1.5;
+      color: var(--text-sub);
+    }
+    .suggestions-highlight-card {
+      background: linear-gradient(135deg, rgba(224, 122, 95, 0.15), rgba(244, 162, 97, 0.1));
+      border: 1.5px solid rgba(224, 122, 95, 0.4);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+    }
+    .suggestions-badges-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.6rem;
+    }
+    .mentor-suggestion-pill {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .mentor-suggestion-pill.done {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34D399;
+    }
+
+    .team-photo-wrap {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 0.75rem;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .team-photo-img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      border-radius: 14px;
+      display: block;
+    }
+    .photo-caption-bar {
+      margin-top: 0.6rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* SLIDE 14: THANK YOU */
+    .thankyou-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      gap: 1.5rem;
+      position: relative;
+    }
+    .thankyou-logos-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 1rem 2rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .thankyou-logos-row img {
+      height: 52px;
+      object-fit: contain;
+    }
+    .thankyou-heading {
+      font-family: var(--font-heading);
+      font-size: 4.5rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #FFFFFF, var(--accent-gold), var(--accent-terracotta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .thankyou-sub {
+      font-size: 1.25rem;
+      color: var(--text-sub);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .thankyou-college {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.6;
+    }
+    .thankyou-launch-btn {
+      margin-top: 1rem;
+      background: linear-gradient(135deg, var(--accent-terracotta), var(--accent-gold));
+      color: white;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 0.9rem 2.2rem;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 10px 30px rgba(224, 122, 95, 0.4);
+      transition: all 0.25s ease;
+    }
+    .thankyou-launch-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 14px 40px rgba(224, 122, 95, 0.6);
+    }
+
+    /* Bottom Control Bar */
+    .deck-controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 66px;
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 90;
+      background: rgba(11, 15, 25, 0.7);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .controls-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .nav-arrow-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .nav-arrow-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(224, 122, 95, 0.5);
+    }
+    .slide-counter-badge {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      padding: 0.4rem 0.8rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+    }
+    .controls-center {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .slide-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .slide-dot.active {
+      width: 24px;
+      border-radius: 999px;
+      background: var(--accent-gold);
+      box-shadow: 0 0 8px rgba(244, 162, 97, 0.6);
+    }
+    .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .deck-action-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-sub);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+    .deck-action-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+    }
+
+    /* Confetti Canvas */
+    #deckConfettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Confetti Canvas -->
+  <canvas id="deckConfettiCanvas"></canvas>
+
+  <!-- Ambient Animated Mesh Gradient -->
+  <div class="ambient-mesh">
+    <div class="mesh-blob blob-1"></div>
+    <div class="mesh-blob blob-2"></div>
+    <div class="mesh-blob blob-3"></div>
+  </div>
+
+  <!-- Top Progress Bar -->
+  <div class="top-progress-container">
+    <div class="top-progress-bar" id="topProgressBar"></div>
+  </div>
+
+  <!-- Global Header Bar -->
+  <header class="deck-header">
+    <div class="header-left">
+      <div class="header-logo-row">
+        <img src="assets/image1.png" alt="VNRVJIET Logo">
+        <div class="header-divider"></div>
+        <img src="assets/image2.png" alt="CPDT Logo">
+      </div>
+      <div class="header-title-wrap">
+        <h2>Smart Clothing Size Checker</h2>
+        <p>Department of AIML, IoT & RAI • VNRVJIET (SC-24)</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="deck-badge">
+        <span class="pulse-dot"></span>
+        <span>Interactive Animated Deck</span>
+      </div>
+      <a href="index.html" class="btn-prototype" title="Launch the Interactive Prototype Application">
+        <span>🚀 Open Web App Demo</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Deck Stage -->
+  <main class="deck-stage">
+
+    <!-- ==========================================
+         SLIDE 1: TITLE SLIDE
+    =========================================== -->
+    <section class="slide active" id="slide-1" data-index="1">
+      <div class="title-slide-container">
+        <div class="title-left">
+          <div class="title-logos-bar anim-item delay-1">
+            <img src="assets/image1.png" alt="VNRVJIET">
+            <div class="header-divider"></div>
+            <img src="assets/image2.png" alt="CPDT">
+          </div>
+          <span class="batch-badge anim-item delay-2">PROJECT BATCH NO. SC-24</span>
+          <h1 class="title-main-heading anim-item delay-3">SMART CLOTHING<br>SIZE CHECKER</h1>
+          
+          <div class="guidance-box anim-item delay-4">
+            <div class="guidance-label">Under the Guidance of</div>
+            <div class="guidance-name">Mr. U. Veeresh</div>
+            <div class="guidance-dept">Department of AIML, IoT & RAI</div>
+          </div>
+        </div>
+
+        <div class="title-right anim-item delay-3">
+          <div class="team-panel">
+            <div class="team-panel-title">👥 Student Project Team</div>
+            <div class="team-members-list">
+              <div class="team-member-item">
+                <span class="member-name">N. Gayathri</span>
+                <span class="member-roll">25071A6648</span>
+              </div>
+              <div class="team-member-item">
+                <span class="member-name">Sneha Sam</span>
+                <span class="member-roll">25071A6663</span>
+              </div>
+              <div class="team-member-item">
+                <span class="member-name">Swayam Prangya</span>
+                <span class="member-roll">25071A6664</span>
+              </div>
+              <div class="team-member-item">
+                <span class="member-name">K. Hema Sundhar</span>
+                <span class="member-roll">25071A0330</span>
+              </div>
+              <div class="team-member-item">
+                <span class="member-name">K. Manideep</span>
+                <span class="member-roll">25071A0331</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="college-tagline">
+            Vallurupalli Nageswara Rao Vignana Jyothi Institute of Engineering & Technology<br>
+            Vignana Jyothi Nagar, Bachupally, Hyderabad 500118, Telangana, India
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>VNRVJIET • Department of AIML, IoT & RAI</span>
+        <span class="caption-source">Autonomous Institution • Approved by AICTE</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 2: TABLE OF CONTENTS
+    =========================================== -->
+    <section class="slide" id="slide-2" data-index="2">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Agenda</span>
+          <h2 class="slide-title">Table of Contents</h2>
+        </div>
+        <span class="slide-number-tag">02</span>
+      </div>
+
+      <div class="toc-grid">
+        <div class="toc-item anim-item delay-1" onclick="goToSlide(3)">
+          <div class="toc-num">1</div>
+          <div class="toc-title">Problem Statement</div>
+        </div>
+        <div class="toc-item anim-item delay-1" onclick="goToSlide(4)">
+          <div class="toc-num">2</div>
+          <div class="toc-title">Empathy Tool Used</div>
+        </div>
+        <div class="toc-item anim-item delay-2" onclick="goToSlide(6)">
+          <div class="toc-num">3</div>
+          <div class="toc-title">Defining Insights</div>
+        </div>
+        <div class="toc-item anim-item delay-2" onclick="goToSlide(7)">
+          <div class="toc-num">4</div>
+          <div class="toc-title">Point of View Statement</div>
+        </div>
+        <div class="toc-item anim-item delay-3" onclick="goToSlide(8)">
+          <div class="toc-num">5</div>
+          <div class="toc-title">Ideation Method Used</div>
+        </div>
+        <div class="toc-item anim-item delay-3" onclick="goToSlide(9)">
+          <div class="toc-num">6</div>
+          <div class="toc-title">Solution Prototype</div>
+        </div>
+        <div class="toc-item anim-item delay-4" onclick="goToSlide(10)">
+          <div class="toc-num">7</div>
+          <div class="toc-title">Main Features</div>
+        </div>
+        <div class="toc-item anim-item delay-4" onclick="goToSlide(11)">
+          <div class="toc-num">8</div>
+          <div class="toc-title">Innovation: Desirability, Viability, Feasibility</div>
+        </div>
+        <div class="toc-item anim-item delay-5" onclick="goToSlide(12)">
+          <div class="toc-num">9</div>
+          <div class="toc-title">Design for Environment</div>
+        </div>
+        <div class="toc-item anim-item delay-5" onclick="goToSlide(13)">
+          <div class="toc-num">10</div>
+          <div class="toc-title">Mentor Interactions & Team Experiences</div>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 1: Outline of the presentation</span>
+        <span class="caption-source">CPDT Design Thinking Phase Review</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 3: PROBLEM STATEMENT
+    =========================================== -->
+    <section class="slide" id="slide-3" data-index="3">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Foundational Context</span>
+          <h2 class="slide-title">Problem Statement</h2>
+        </div>
+        <span class="slide-number-tag">03</span>
+      </div>
+
+      <div class="problem-cards-grid">
+        <!-- 1 Project -->
+        <div class="problem-card card-project anim-item delay-1">
+          <div class="problem-card-header">
+            <span class="problem-badge-num" style="color: var(--accent-teal);">1</span>
+            <span style="font-size: 1.5rem;">📱</span>
+          </div>
+          <h3 class="problem-card-title">Project</h3>
+          <p class="problem-card-body">
+            <strong>Smart Clothing Size Checker</strong> is a web/mobile-based system that helps online shoppers select an appropriate clothing size by comparing their personal body measurements with the actual size chart of a selected product and brand.
+          </p>
+          <div class="problem-highlight-chip">
+            Considers chest, waist, hip, shoulder, inseam & fit preference (slim, regular, relaxed)
+          </div>
+        </div>
+
+        <!-- 2 Problem -->
+        <div class="problem-card card-problem anim-item delay-2">
+          <div class="problem-card-header">
+            <span class="problem-badge-num" style="color: var(--accent-terracotta);">2</span>
+            <span style="font-size: 1.5rem;">⚠️</span>
+          </div>
+          <h3 class="problem-card-title">Problem</h3>
+          <p class="problem-card-body">
+            Online shoppers face difficulty choosing the correct clothing size because <strong>S, M, L and XL are not standardized</strong> across brands.
+            <br><br>
+            The same labelled size corresponds to completely different measurements between brands. Shoppers must manually compare charts, guess, order multiple sizes ("bracketing"), or deal with painful returns.
+          </p>
+          <div class="problem-highlight-chip" style="color: var(--accent-terracotta);">
+            Non-standard sizing causes 30%+ fashion return rates
+          </div>
+        </div>
+
+        <!-- 3 Gap -->
+        <div class="problem-card card-gap anim-item delay-3">
+          <div class="problem-card-header">
+            <span class="problem-badge-num" style="color: var(--accent-gold);">3</span>
+            <span style="font-size: 1.5rem;">💡</span>
+          </div>
+          <h3 class="problem-card-title">Gap</h3>
+          <p class="problem-card-body">
+            Existing shopping interfaces generally provide a raw, confusing size chart, but the <strong>shopper still has to manually interpret it themselves</strong>.
+            <br><br>
+            Therefore, there is an urgent need for an <strong>explainable, product-specific size recommendation engine</strong> rather than merely displaying generic S/M/L labels.
+          </p>
+          <div class="problem-highlight-chip">
+            Solution: Explainable recommendation with fit warnings
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 2: Overview of the project, the problem and the gap in online clothing size selection.</span>
+        <span class="caption-source">Source: Team study of online clothing size charts and sizing practices.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 4: EMPATHY TOOL USED
+    =========================================== -->
+    <section class="slide" id="slide-4" data-index="4">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Design Thinking Phase 1: Empathize</span>
+          <h2 class="slide-title">Empathy Tool Used</h2>
+        </div>
+        <span class="slide-number-tag">04</span>
+      </div>
+
+      <div class="empathy-layout">
+        <!-- SAYS -->
+        <div class="empathy-quadrant quadrant-says anim-item delay-1">
+          <div class="quadrant-label">💬 SAYS</div>
+          <div class="quadrant-content">
+            <div class="quote-box">
+              “I am not sure which size I should order.”
+            </div>
+            <p style="margin-top: 0.6rem; font-size: 0.8rem; color: var(--text-muted);">
+              Expressed hesitation during customer interviews when switching between familiar and new fashion brands.
+            </p>
+          </div>
+        </div>
+
+        <!-- THINKS -->
+        <div class="empathy-quadrant quadrant-thinks anim-item delay-2">
+          <div class="quadrant-label">🧠 THINKS</div>
+          <div class="quadrant-content">
+            <div class="quote-box">
+              “The size chart says M, but will M actually fit me?”
+            </div>
+            <p style="margin-top: 0.6rem; font-size: 0.8rem; color: var(--text-muted);">
+              Constant internal doubt regarding brand vanity sizing, shrinkage after wash, and torso/shoulder tightness.
+            </p>
+          </div>
+        </div>
+
+        <!-- CENTER USER -->
+        <div class="empathy-center-user anim-item delay-1">
+          <div class="user-avatar-circle">🛍️</div>
+          <span class="center-user-label">USER</span>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Online Shopper</span>
+        </div>
+
+        <!-- DOES -->
+        <div class="empathy-quadrant quadrant-does anim-item delay-3">
+          <div class="quadrant-label">🏃 DOES</div>
+          <div class="quadrant-content">
+            <ul class="empathy-list">
+              <li>Checks the brand's size chart</li>
+              <li>Compares chest, waist & hip measurements</li>
+              <li>Reads conflicting customer reviews</li>
+              <li>Searches sizing forums & Reddit</li>
+              <li>Sometimes orders more than one size (bracketing)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- FEELS -->
+        <div class="empathy-quadrant quadrant-feels anim-item delay-4">
+          <div class="quadrant-label">❤️ FEELS</div>
+          <div class="quadrant-content">
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem;">
+              <span class="mentor-suggestion-pill" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border-color: rgba(239, 68, 68, 0.3);">😕 Confused</span>
+              <span class="mentor-suggestion-pill" style="background: rgba(245, 158, 11, 0.15); color: #FCD34D; border-color: rgba(245, 158, 11, 0.3);">❓ Uncertain</span>
+              <span class="mentor-suggestion-pill" style="background: rgba(224, 122, 95, 0.15); color: #FDA4AF; border-color: rgba(224, 122, 95, 0.3);">😤 Frustrated</span>
+              <span class="mentor-suggestion-pill" style="background: rgba(99, 102, 241, 0.15); color: #C7D2FE; border-color: rgba(99, 102, 241, 0.3);">📦 Anxious about returns</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 3: Empathy map representing online shoppers' experiences, thoughts and difficulties while selecting clothing sizes.</span>
+        <span class="caption-source">Source: Team study of online clothing shoppers (Survey & Interviews).</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 5: UN SDGS ADDRESSED
+    =========================================== -->
+    <section class="slide" id="slide-5" data-index="5">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Global Sustainability Impact</span>
+          <h2 class="slide-title">UN SDGs Addressed</h2>
+        </div>
+        <span class="slide-number-tag">05</span>
+      </div>
+
+      <div class="sdg-grid">
+        <!-- SDG 9 -->
+        <div class="sdg-card sdg-card-9 anim-item delay-1">
+          <div class="sdg-header-badge">
+            <div class="sdg-icon-box">9</div>
+            <div class="sdg-header-text">
+              <h3>INDUSTRY, INNOVATION & INFRASTRUCTURE</h3>
+              <p>SUSTAINABLE DEVELOPMENT GOAL 9</p>
+            </div>
+          </div>
+
+          <div class="sdg-point">
+            <h4>Innovation and Digital Infrastructure</h4>
+            <p>An innovative digital tool combining <strong>chart extraction, OCR, and an explainable matching engine</strong> to convert any brand's proprietary size chart into transparent recommendations.</p>
+          </div>
+
+          <div class="sdg-point">
+            <h4>Scalable Web Integration</h4>
+            <p>Modern web infrastructure ready to plug into e-commerce checkout platforms and scale across diverse garment categories and global brands.</p>
+          </div>
+        </div>
+
+        <!-- SDG 12 -->
+        <div class="sdg-card sdg-card-12 anim-item delay-2">
+          <div class="sdg-header-badge">
+            <div class="sdg-icon-box">12</div>
+            <div class="sdg-header-text">
+              <h3>RESPONSIBLE CONSUMPTION & PRODUCTION</h3>
+              <p>SUSTAINABLE DEVELOPMENT GOAL 12</p>
+            </div>
+          </div>
+
+          <div class="sdg-point">
+            <h4>Responsible Consumption and Less Waste</h4>
+            <p>Getting the right size on the very first try drastically cuts down avoidable size-related <strong>returns, exchanges, and dead stock</strong>.</p>
+          </div>
+
+          <div class="sdg-point">
+            <h4>Packaging & Transportation Emission Reductions</h4>
+            <p>Eliminates redundant corrugated box packaging, plastic wrap waste, and reverse-logistics carbon emissions caused by trial-and-return behaviors.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 11: UN Sustainable Development Goals 9 and 12 addressed by the Smart Clothing Size Checker.</span>
+        <span class="caption-source">Source: United Nations SDGs; proposed system analysis.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 6: DEFINING INSIGHTS
+    =========================================== -->
+    <section class="slide" id="slide-6" data-index="6">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Design Thinking Phase 2: Define</span>
+          <h2 class="slide-title">Defining Insights</h2>
+        </div>
+        <span class="slide-number-tag">06</span>
+      </div>
+
+      <div class="insights-table-wrap anim-item delay-1">
+        <table class="insights-table">
+          <thead>
+            <tr>
+              <th style="width: 28%;">Need Type</th>
+              <th>Detailed Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="need-badge need-primary">🎯 Primary Need</span>
+              </td>
+              <td>
+                <strong>A reliable way to identify the appropriate size for a specific clothing product</strong> without relying on generic letter sizes.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="need-badge need-secondary">⚙️ Secondary Needs</span>
+              </td>
+              <td>
+                Product-specific size comparison, measurement normalization across units (inches vs cm), fit preference accommodation (slim, regular, oversized), tight/loose fit warnings, and simple granular explanations.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="need-badge need-latent">✨ Latent Need</span>
+              </td>
+              <td>
+                <strong>Confidence and psychological reassurance</strong> that the selected size is appropriate before placing the order, eliminating sizing anxiety and reducing uncertainty about fit.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Table 1: Classification of online shoppers' primary, secondary and latent needs related to clothing-size selection.</span>
+        <span class="caption-source">Source: Team study of online clothing shoppers and size-selection challenges.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 7: POINT OF VIEW STATEMENT
+    =========================================== -->
+    <section class="slide" id="slide-7" data-index="7">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Synthesis Framework</span>
+          <h2 class="slide-title">Point of View (POV)</h2>
+        </div>
+        <span class="slide-number-tag">07</span>
+      </div>
+
+      <div class="pov-equation-grid">
+        <!-- USER -->
+        <div class="pov-block anim-item delay-1">
+          <span class="pov-block-badge badge-user">USER</span>
+          <p class="pov-desc">An online shopper purchasing clothing without physically trying it on.</p>
+        </div>
+
+        <div class="pov-operator anim-item delay-2">+</div>
+
+        <!-- NEED -->
+        <div class="pov-block anim-item delay-2">
+          <span class="pov-block-badge badge-need">NEED</span>
+          <p class="pov-desc">A reliable and understandable way to select the appropriate size for a specific clothing product.</p>
+        </div>
+
+        <div class="pov-operator anim-item delay-3">+</div>
+
+        <!-- INSIGHT -->
+        <div class="pov-block anim-item delay-3">
+          <span class="pov-block-badge badge-insight">INSIGHT</span>
+          <p class="pov-desc">Different brands and garments use different measurements and fits, so a generic S/M/L label or size chart alone does not provide enough personalized guidance.</p>
+        </div>
+      </div>
+
+      <div class="pov-final-box anim-item delay-4">
+        <div class="pov-statement-title">📌 Actionable POV Statement</div>
+        <div class="pov-statement-text">
+          “An online shopper needs a <strong>product-specific and explainable</strong> clothing size recommendation because different brands, garments and fit preferences make generic size labels and charts difficult to interpret.”
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 5: Point of View statement identifying the user, need and insight for the Smart Clothing Size Checker.</span>
+        <span class="caption-source">Source: Team study of online clothing-size selection challenges.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 8: IDEATION METHOD USED
+    =========================================== -->
+    <section class="slide" id="slide-8" data-index="8">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Design Thinking Phase 3: Ideate</span>
+          <h2 class="slide-title">Ideation Method Used</h2>
+        </div>
+        <span class="slide-number-tag">08</span>
+      </div>
+
+      <div class="mindmap-container">
+        <!-- Interactive Animated Mind Map -->
+        <div class="mindmap-visual anim-item delay-1">
+          <div class="mm-node mm-hub">👕 Smart Clothing Size Checker</div>
+          <div class="mm-node mm-user">👤 User Profile<br><span style="font-size:0.68rem; font-weight:normal;">Chest, Waist, Hip, Shoulder</span></div>
+          <div class="mm-node mm-prod">🏷️ Product Data<br><span style="font-size:0.68rem; font-weight:normal;">Brand, Category, Size Chart</span></div>
+          <div class="mm-node mm-tech">⚙️ Technology<br><span style="font-size:0.68rem; font-weight:normal;">OCR, Normalization, Matcher</span></div>
+          <div class="mm-node mm-fit">✨ Personalization<br><span style="font-size:0.68rem; font-weight:normal;">Slim, Regular, Relaxed</span></div>
+          <div class="mm-node mm-out">📊 Output<br><span style="font-size:0.68rem; font-weight:normal;">Size & Granular Fit</span></div>
+        </div>
+
+        <div class="mindmap-info-col">
+          <div class="ideation-method-box anim-item delay-2">
+            <div class="ideation-method-title">Method Applied</div>
+            <div class="ideation-method-val">Brainstorming & Radial Mind Mapping</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem;">
+              Systematically branched out parameters required to bridge user morphology with manufacturer garment geometries.
+            </p>
+          </div>
+
+          <div class="selected-idea-card anim-item delay-3">
+            <div class="selected-idea-badge">⭐ Selected Core Innovation</div>
+            <div class="selected-idea-desc">
+              <strong>A product-specific clothing size checker</strong> that converts a brand's size chart into structured measurement data, compares it with the user's saved measurements and fit preference, and produces an explainable size recommendation with granular tolerance alerts.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 6: Brainstorming and mind map used to identify and refine features of the Smart Clothing Size Checker.</span>
+        <span class="caption-source">Source: Team ideation study.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 9: SOLUTION PROTOTYPE
+    =========================================== -->
+    <section class="slide" id="slide-9" data-index="9">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Design Thinking Phase 4: Prototype</span>
+          <h2 class="slide-title">Solution Prototype Workflow</h2>
+        </div>
+        <span class="slide-number-tag">09</span>
+      </div>
+
+      <div class="prototype-flow-container">
+        <div class="proto-quote-banner anim-item delay-1">
+          “Users enter their measurements and select a clothing product. The system compares them with the product’s size chart and recommends the most suitable size based on fit preference and measurement differences.”
+        </div>
+
+        <div class="workflow-steps-grid">
+          <!-- Step 1 -->
+          <div class="workflow-step-card anim-item delay-1">
+            <div class="step-badge">1</div>
+            <h4 class="step-card-title">Registration & Body Profile</h4>
+            <p class="step-card-desc">User enters chest, waist, hip, shoulder, height, inseam, or uses the Game Avatar creator.</p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="workflow-step-card anim-item delay-2">
+            <div class="step-badge">2</div>
+            <h4 class="step-card-title">Select Garment Product</h4>
+            <p class="step-card-desc">User selects category (Top vs Bottom) and pastes the e-commerce product link.</p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="workflow-step-card anim-item delay-3">
+            <div class="step-badge">3</div>
+            <h4 class="step-card-title">Size Chart Collection</h4>
+            <p class="step-card-desc">Obtains size chart via image upload or live viewfinder camera tag scanner.</p>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="workflow-step-card anim-item delay-4">
+            <div class="step-badge">4</div>
+            <h4 class="step-card-title">Measurement Normalization</h4>
+            <p class="step-card-desc">Normalizes units (in/cm) and standardizes anatomical reference baselines.</p>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="workflow-step-card anim-item delay-5">
+            <div class="step-badge">5</div>
+            <h4 class="step-card-title">Fit Ease Analysis</h4>
+            <p class="step-card-desc">Calculates ease tolerances for Fitted / Snug, Regular, or Oversized styles.</p>
+          </div>
+
+          <!-- Step 6 -->
+          <div class="workflow-step-card anim-item delay-6">
+            <div class="step-badge">6</div>
+            <h4 class="step-card-title">Explainable Verdict</h4>
+            <p class="step-card-desc">Displays recommended size, confidence %, tight/loose gauges, and size switcher.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 7: Prototype workflow of the Smart Clothing Size Checker from user measurement input to personalized size recommendation.</span>
+        <span class="caption-source">Source: Proposed system design.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 10: MAIN FEATURES
+    =========================================== -->
+    <section class="slide" id="slide-10" data-index="10">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">System Architecture</span>
+          <h2 class="slide-title">Main Features</h2>
+        </div>
+        <span class="slide-number-tag">10</span>
+      </div>
+
+      <div class="features-matrix-grid">
+        <div class="feature-matrix-item anim-item delay-1">
+          <div class="feature-num-icon">1</div>
+          <div class="feature-text-wrap">
+            <h4>User Account & Auth</h4>
+            <p>Secure login with Google OAuth, Email/Password, or Guest Instant Access.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix-item anim-item delay-1">
+          <div class="feature-num-icon">2</div>
+          <div class="feature-text-wrap">
+            <h4>Personal Measurement Profile</h4>
+            <p>Saves chest, waist, hips, shoulder span, height, and leg inseam values.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix-item anim-item delay-2">
+          <div class="feature-num-icon">3</div>
+          <div class="feature-text-wrap">
+            <h4>Product & Brand Selection</h4>
+            <p>Analyzes clothing product categories: Tops/Shirts vs Pants/Bottoms.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix-item anim-item delay-2">
+          <div class="feature-num-icon">4</div>
+          <div class="feature-text-wrap">
+            <h4>Multi-Modal Size-Chart Input</h4>
+            <p>Accepts brand charts via direct dropzone upload, camera OCR snap, or URL data.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix-item anim-item delay-3">
+          <div class="feature-num-icon">5</div>
+          <div class="feature-text-wrap">
+            <h4>Measurement Normalization</h4>
+            <p>Auto-converts between imperial inches and metric centimeters effortlessly.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix-item anim-item delay-3">
+          <div class="feature-num-icon">6</div>
+          <div class="feature-text-wrap">
+            <h4>Personalized Sizing Matcher</h4>
+            <p>Compares user measurements with each available garment size concurrently.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix-item anim-item delay-4">
+          <div class="feature-num-icon">7</div>
+          <div class="feature-text-wrap">
+            <h4>Fit Style Preference</h4>
+            <p>Personalizes tolerance for Fitted/Snug, Standard Regular, or Streetwear Oversized.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix-item anim-item delay-4">
+          <div class="feature-num-icon">8</div>
+          <div class="feature-text-wrap">
+            <h4>Explainable Recommendation</h4>
+            <p>Displays recommendation (e.g. Size L) with breakdown: Chest Match, Waist Ease, Length.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix-item anim-item delay-5">
+          <div class="feature-num-icon">9</div>
+          <div class="feature-text-wrap">
+            <h4>History & Eco-Feedback</h4>
+            <p>Calculates packaging saved, reverse shipping prevented, and saved CO₂ metrics.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 8: Main features of the proposed Smart Clothing Size Checker system.</span>
+        <span class="caption-source">Source: Proposed system design.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 11: INNOVATION (DVF)
+    =========================================== -->
+    <section class="slide" id="slide-11" data-index="11">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Feasibility Analysis</span>
+          <h2 class="slide-title">Innovation: Desirability, Viability, Feasibility</h2>
+        </div>
+        <span class="slide-number-tag">11</span>
+      </div>
+
+      <div class="dvf-grid">
+        <!-- Desirability -->
+        <div class="dvf-card card-d anim-item delay-1">
+          <div class="dvf-header">
+            <div class="dvf-big-letter">D</div>
+            <div class="dvf-title-group">
+              <h3>Desirability</h3>
+              <span>Shopper Value</span>
+            </div>
+          </div>
+          <ul class="dvf-list">
+            <li>Reduces uncertainty before clicking purchase</li>
+            <li>Eliminates manual chart interpretation</li>
+            <li>Provides garment-specific advice</li>
+            <li>Explains exactly <em>why</em> a size is recommended</li>
+            <li>Reuses saved profile for future shopping</li>
+          </ul>
+        </div>
+
+        <!-- Viability -->
+        <div class="dvf-card card-v anim-item delay-2">
+          <div class="dvf-header">
+            <div class="dvf-big-letter">V</div>
+            <div class="dvf-title-group">
+              <h3>Viability</h3>
+              <span>Market & Business</span>
+            </div>
+          </div>
+          <ul class="dvf-list">
+            <li>Operates as standalone web/mobile service</li>
+            <li>Integrates directly into e-commerce checkout APIs</li>
+            <li>Saves retailers millions in return processing costs</li>
+            <li>Scales across all brands and international sizing charts</li>
+          </ul>
+        </div>
+
+        <!-- Feasibility -->
+        <div class="dvf-card card-f anim-item delay-3">
+          <div class="dvf-header">
+            <div class="dvf-big-letter">F</div>
+            <div class="dvf-title-group">
+              <h3>Feasibility</h3>
+              <span>Technology Stack</span>
+            </div>
+          </div>
+          <ul class="dvf-list">
+            <li>Frontend: Responsive HTML5, modern CSS animations</li>
+            <li>Engine: Client-side mathematical tolerance matching</li>
+            <li>Camera: Live HTML5 MediaDevices camera capture</li>
+            <li>Zero-dependency backend: Runs instantly on any server</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 9: Desirability, viability and feasibility analysis of the proposed Smart Clothing Size Checker.</span>
+        <span class="caption-source">Source: Proposed system analysis.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 12: DESIGN FOR ENVIRONMENT
+    =========================================== -->
+    <section class="slide" id="slide-12" data-index="12">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Ecological Responsibility</span>
+          <h2 class="slide-title">Design for Environment</h2>
+        </div>
+        <span class="slide-number-tag">12</span>
+      </div>
+
+      <div class="eco-benefits-grid">
+        <div class="eco-card anim-item delay-1">
+          <div class="eco-icon-bubble">🔄</div>
+          <h3>LESS RETURNS</h3>
+          <p>
+            Precision ease guidance eliminates the guesswork that forces shoppers to order 2-3 sizes to find one that fits, drastically reducing avoidable size-related exchanges.
+          </p>
+        </div>
+
+        <div class="eco-card anim-item delay-2">
+          <div class="eco-icon-bubble">📦</div>
+          <h3>LESS PACKAGING</h3>
+          <p>
+            Cutting return transactions prevents millions of tons of single-use corrugated cardboard boxes, poly mailer bags, and plastic adhesive tape from entering landfills.
+          </p>
+        </div>
+
+        <div class="eco-card anim-item delay-3">
+          <div class="eco-icon-bubble">🌿</div>
+          <h3>LOWER IMPACT</h3>
+          <p>
+            Eliminating reverse logistics transport curtails diesel freight truck miles, air cargo emissions, and warehouse repacking overhead, saving ~2.4 kg of CO₂ per avoided return.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Figure 10: Environmental benefits of the proposed Smart Clothing Size Checker through digital sizing and reduced size-related returns.</span>
+        <span class="caption-source">Source: Proposed system analysis.</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 13: MENTOR & TEAM EXPERIENCES
+    =========================================== -->
+    <section class="slide" id="slide-13" data-index="13">
+      <div class="slide-header">
+        <div>
+          <span class="slide-category-pill">Academic Mentorship & Growth</span>
+          <h2 class="slide-title">Mentor Interactions & Team Experiences</h2>
+        </div>
+        <span class="slide-number-tag">13</span>
+      </div>
+
+      <div class="mentor-team-grid">
+        <div class="mentor-info-col">
+          <!-- Mentor Interactions -->
+          <div class="mentor-box anim-item delay-1">
+            <div class="mentor-box-title">1. Mentor Interactions</div>
+            <div class="mentor-box-content">
+              Throughout the project the team interacted with the project mentor, <strong>Mr. U. Veeresh</strong>, who reviewed the work at the main stages of the Design Thinking process on <strong>10 occasions</strong>.
+            </div>
+          </div>
+
+          <!-- Mentor Suggestions -->
+          <div class="suggestions-highlight-card anim-item delay-2">
+            <div class="mentor-box-title" style="color: var(--accent-terracotta);">2. Mentor Suggestions & Implementation</div>
+            <div class="suggestions-badges-row">
+              <span class="mentor-suggestion-pill done">
+                <span>✓</span> Add Animations
+              </span>
+              <span class="mentor-suggestion-pill done">
+                <span>✓</span> Change Design & Colour
+              </span>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 0.6rem;">
+              Both suggestions implemented: Upgraded warm boutique palette, fluid screen entrances, interactive mannequin morph, laser HUD scanlines, and animated slide transitions!
+            </p>
+          </div>
+
+          <!-- Team Experiences -->
+          <div class="mentor-box anim-item delay-3">
+            <div class="mentor-box-title">3. Team Experiences</div>
+            <div class="mentor-box-content">
+              Learned empathy mapping techniques with real shopper interviews. Applied diverse ideation tools including radial mind mapping. Conducted surveys to quantify cross-brand sizing inconsistencies. Built functional working prototypes.
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Photo -->
+        <div class="team-photo-wrap anim-item delay-2">
+          <img src="assets/image5.png" alt="Batch SC-24 Project Team" class="team-photo-img">
+          <div class="photo-caption-bar">
+            Batch SC-24: N. Gayathri, Sneha Sam, Swayam Prangya, K. Hema Sundhar, K. Manideep
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>VNRVJIET • Department of AIML, IoT & RAI • Batch SC-24</span>
+        <span class="caption-source">Supervisor: Mr. U. Veeresh</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SLIDE 14: THANK YOU
+    =========================================== -->
+    <section class="slide" id="slide-14" data-index="14">
+      <div class="thankyou-container">
+        <div class="thankyou-logos-row anim-item delay-1">
+          <img src="assets/image1.png" alt="VNRVJIET Logo">
+          <div class="header-divider"></div>
+          <img src="assets/image2.png" alt="CPDT Logo">
+        </div>
+
+        <h1 class="thankyou-heading anim-item delay-2">Thank You!</h1>
+        <p class="thankyou-sub anim-item delay-3">SMART CLOTHING SIZE CHECKER • BATCH SC-24</p>
+        
+        <p class="thankyou-college anim-item delay-4">
+          DEPARTMENT OF AIML, IOT & RAI<br>
+          Vallurupalli Nageswara Rao Vignana Jyothi Institute of Engineering & Technology<br>
+          <a href="https://vnrvjiet.ac.in/" target="_blank" style="color: var(--accent-gold); text-decoration: none;">https://vnrvjiet.ac.in/</a>
+        </p>
+
+        <a href="index.html" class="thankyou-launch-btn anim-item delay-5">
+          <span>🚀 Launch Working Prototype Demo</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="slide-footer-caption">
+        <span>Presented by Batch SC-24</span>
+        <span class="caption-source">VNRVJIET Autonomous Institution</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Control Dock -->
+  <footer class="deck-controls">
+    <div class="controls-left">
+      <button class="nav-arrow-btn" id="prevSlideBtn" title="Previous Slide (Left Arrow)">◀</button>
+      <button class="nav-arrow-btn" id="nextSlideBtn" title="Next Slide (Right Arrow)">▶</button>
+      <div class="slide-counter-badge" id="slideCounterBadge">Slide 01 / 14</div>
+    </div>
+
+    <div class="controls-center" id="slideDotsContainer">
+      <!-- 14 clickable indicator dots dynamically generated -->
+    </div>
+
+    <div class="controls-right">
+      <button class="deck-action-btn" id="soundToggleBtn" title="Toggle Slide Sound Effects">
+        <span id="soundIcon">🔊</span>
+        <span>Sound</span>
+      </button>
+      <button class="deck-action-btn" id="fullscreenToggleBtn" title="Toggle Fullscreen Mode (F)">
+        <span>⛶</span>
+        <span>Fullscreen</span>
+      </button>
+      <a href="index.html" class="btn-prototype" style="font-size: 0.76rem; padding: 0.4rem 0.85rem;">
+        <span>Prototype App ↗</span>
+      </a>
+    </div>
+  </footer>
+
+  <!-- DECK LOGIC SCRIPT -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 14;
+    let soundEnabled = true;
+
+    // Web Audio Synthesizer for slide clicks and celebratory chimes
+    const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+
+    function playSlideSound(type = 'click') {
+      if (!soundEnabled || !audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      if (type === 'click') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.06);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.06);
+      } else if (type === 'fanfare') {
+        // Multi-tone chime on Thank You slide
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.type = 'triangle';
+          o.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.09);
+          g.gain.setValueAtTime(0.09, audioCtx.currentTime + i * 0.09);
+          g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.09 + 0.45);
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.start(audioCtx.currentTime + i * 0.09);
+          o.stop(audioCtx.currentTime + i * 0.09 + 0.45);
+        });
+      }
+    }
+
+    function initDots() {
+      const container = document.getElementById('slideDotsContainer');
+      container.innerHTML = '';
+      for (let i = 1; i <= totalSlides; i++) {
+        const dot = document.createElement('div');
+        dot.className = `slide-dot ${i === 1 ? 'active' : ''}`;
+        dot.title = `Jump to Slide ${i}`;
+        dot.addEventListener('click', () => goToSlide(i));
+        container.appendChild(dot);
+      }
+    }
+
+    function updateDeckUI() {
+      // Show only active slide
+      document.querySelectorAll('.slide').forEach((slide, idx) => {
+        if (idx + 1 === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // Update counter
+      const formattedCur = String(currentSlide).padStart(2, '0');
+      const formattedTot = String(totalSlides).padStart(2, '0');
+      document.getElementById('slideCounterBadge').textContent = `Slide ${formattedCur} / ${formattedTot}`;
+
+      // Update progress bar
+      const progressPct = ((currentSlide) / totalSlides) * 100;
+      document.getElementById('topProgressBar').style.width = `${progressPct}%`;
+
+      // Update dots
+      document.querySelectorAll('.slide-dot').forEach((dot, idx) => {
+        if (idx + 1 === currentSlide) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+
+      // Slide 14 celebration
+      if (currentSlide === 14) {
+        playSlideSound('fanfare');
+        triggerConfetti();
+      }
+    }
+
+    function goToSlide(num) {
+      if (num < 1) num = 1;
+      if (num > totalSlides) num = totalSlides;
+      if (num !== currentSlide) {
+        currentSlide = num;
+        playSlideSound('click');
+        updateDeckUI();
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        goToSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        goToSlide(currentSlide - 1);
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(1);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides);
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+    });
+
+    // Touch Swipe Support
+    let touchStartX = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    window.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 50) nextSlide();
+      if (touchEndX - touchStartX > 50) prevSlide();
+    }, false);
+
+    // Fullscreen toggle
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Sound toggle
+    document.getElementById('soundToggleBtn').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+    });
+
+    document.getElementById('fullscreenToggleBtn').addEventListener('click', toggleFullscreen);
+    document.getElementById('nextSlideBtn').addEventListener('click', nextSlide);
+    document.getElementById('prevSlideBtn').addEventListener('click', prevSlide);
+
+    // Confetti Engine for Thank You Slide
+    function triggerConfetti() {
+      const canvas = document.getElementById('deckConfettiCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#E07A5F', '#F4A261', '#10B981', '#3B82F6', '#F59E0B', '#FFFFFF'];
+
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height * 0.65,
+          vx: (Math.random() - 0.5) * 18,
+          vy: (Math.random() - 0.9) * 16 - 4,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 12,
+          opacity: 1
+        });
+      }
+
+      let animId;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let activeCount = 0;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35; // Gravity
+          p.vx *= 0.98; // Friction
+          p.rotation += p.rotSpeed;
+          p.opacity -= 0.008;
+
+          if (p.opacity > 0 && p.y < canvas.height + 50) {
+            activeCount++;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            ctx.restore();
+          }
+        });
+
+        if (activeCount > 0) {
+          animId = requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          cancelAnimationFrame(animId);
+        }
+      }
+      render();
+    }
+
+    // Initialize Deck
+    initDots();
+    updateDeckUI();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Clothing Size Checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient Warm Aura Background -->
+  <div class="warm-aura-bg">
+    <div class="aura-blob aura-1"></div>
+    <div class="aura-blob aura-2"></div>
+    <div class="aura-blob aura-3"></div>
+  </div>
+
+  <!-- Confetti Celebration Canvas -->
+  <canvas id="appConfettiCanvas" class="app-confetti-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- Top Global Header -->
+    <header class="app-header">
+      <div class="header-branding">
+        <div class="logo-mark">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
+          </svg>
+        </div>
+        <div class="header-titles">
+          <h1>Smart Clothing Size Checker</h1>
+        </div>
+      </div>
+
+      <nav class="header-actions">
+        <a href="presentation.html" class="btn-deck-pill" title="Open Interactive Presentation Slides">
+          <span>📽️</span>
+          <span>Presentation Deck</span>
+        </a>
+        <button id="soundToggleBtn" class="icon-chip" title="Toggle Sound Feedback">
+          <span class="chip-icon">🔊</span>
+        </button>
+        <div id="userBadge" class="user-chip hidden">
+          <div class="user-avatar" id="headerAvatar">G</div>
+          <span class="user-name" id="headerUserName">Gayathri</span>
+          <button id="logoutBtn" class="logout-icon" title="Sign Out">✕</button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Interactive Stepper Progress (Hidden on Login screen) -->
+    <nav class="stepper-nav hidden" id="stepperNav" aria-label="Progress steps">
+      <div class="step-indicator active" data-step="1">
+        <span class="step-num">1</span>
+        <span class="step-label">My Sizes</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-indicator" data-step="2">
+        <span class="step-num">2</span>
+        <span class="step-label">Garment & Chart</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-indicator" data-step="3">
+        <span class="step-num">3</span>
+        <span class="step-label">Smart Match</span>
+      </div>
+    </nav>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="main-content">
+
+      <!-- ==============================================
+           SCREEN 1: AUTHENTICATION & WELCOME
+      =============================================== -->
+      <section id="authScreen" class="view-screen active">
+        <div class="auth-hero-card">
+          <div class="auth-badge">✨ AI-Powered Fit Intelligence</div>
+          <h2 class="auth-title">Never Guess Your Size Again.</h2>
+
+          <!-- Auth Modes Tabs -->
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" data-auth-tab="login">Log In</button>
+            <button type="button" class="auth-tab-btn" data-auth-tab="signup">Create Account</button>
+          </div>
+
+          <!-- Google Quick Auth -->
+          <div class="auth-oauth-zone">
+            <button type="button" id="googleSignInBtn" class="btn btn-google">
+              <svg class="google-svg" viewBox="0 0 24 24" width="20" height="20">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span>Continue with Google</span>
+            </button>
+          </div>
+
+          <div class="divider-text"><span>or enter with email</span></div>
+
+          <!-- Email Password Form -->
+          <form id="emailAuthForm" class="auth-form" onsubmit="return false;" novalidate>
+            <!-- Real-time Auth Status / Error Banner -->
+            <div id="authStatusBanner" class="auth-status-banner hidden">
+              <span class="auth-status-icon" id="authStatusIcon">⚠️</span>
+              <span id="authStatusText">Authentication message</span>
+            </div>
+
+            <!-- Full Name (Only in Signup mode) -->
+            <div class="form-group" id="nameFieldGroup" style="display: none;">
+              <label for="authNameInput">Full Name <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="authNameInput" placeholder="e.g. Gayathri N." autocomplete="name">
+              </div>
+              <span class="field-error-text hidden" id="nameError"></span>
+            </div>
+
+            <!-- Email Address -->
+            <div class="form-group">
+              <label for="authEmailInput">Email Address <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">✉️</span>
+                <input type="email" id="authEmailInput" placeholder="name@gmail.com" required autocomplete="email">
+              </div>
+              <span class="field-error-text hidden" id="emailError"></span>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+              <label for="authPasswordInput">Password <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="authPasswordInput" placeholder="Minimum 6 characters" required autocomplete="current-password">
+                <button type="button" id="togglePasswordBtn" class="toggle-password-btn" aria-label="Toggle password visibility">👁️</button>
+              </div>
+              <!-- Real-time Password Strength Meter (Active on Signup) -->
+              <div class="password-strength-container hidden" id="passwordStrengthBox">
+                <div class="strength-bar-track">
+                  <div class="strength-bar-fill" id="strengthBarFill"></div>
+                </div>
+                <div class="strength-meta-row">
+                  <span class="strength-label" id="strengthLabel">Enter password (min 6 characters)</span>
+                  <span class="strength-pct" id="strengthPct"></span>
+                </div>
+              </div>
+              <span class="field-error-text hidden" id="passwordError"></span>
+            </div>
+
+            <!-- Confirm Password (Only in Signup mode) -->
+            <div class="form-group" id="confirmPasswordFieldGroup" style="display: none;">
+              <label for="authConfirmPasswordInput">Confirm Password <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="authConfirmPasswordInput" placeholder="Re-enter password" autocomplete="new-password">
+              </div>
+              <span class="field-error-text hidden" id="confirmPasswordError"></span>
+            </div>
+
+            <div class="auth-options-row">
+              <label class="checkbox-container">
+                <input type="checkbox" id="rememberMeCheck" checked>
+                <span class="checkmark"></span>
+                <span>Remember me</span>
+              </label>
+            </div>
+
+            <button type="submit" id="authSubmitBtn" class="btn btn-primary btn-block">
+              <span id="authSubmitLabel">Log In to My Sizing Portal</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </form>
+
+          <!-- Guest option -->
+          <div class="guest-access-zone">
+            <span class="guest-divider">Want to test right now?</span>
+            <button id="guestLoginBtn" class="btn btn-guest">
+              <span class="guest-emoji">⚡</span>
+              <span>Continue as Guest (Instant Demo Access)</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ==============================================
+           SCREEN 2: PERSONAL BODY SIZES & GAME AVATAR
+      =============================================== -->
+      <section id="sizesScreen" class="view-screen">
+        <div class="screen-card">
+          <div class="screen-header-row">
+            <div>
+              <span class="badge badge-warm">Step 1 of 3</span>
+              <h2 class="section-title">Your Body Measurement Profile</h2>
+            </div>
+            
+            <!-- Global Unit Switcher -->
+            <div class="unit-toggle-pill">
+              <button class="unit-btn active" data-unit="in">Inches (in)</button>
+              <button class="unit-btn" data-unit="cm">Centimeters (cm)</button>
+            </div>
+          </div>
+
+          <!-- GAME AVATAR HERO BANNER -->
+          <div class="game-avatar-banner">
+            <div class="banner-avatar-icon">🎮</div>
+            <div class="banner-content">
+              <h3>Don't know your exact measurements?</h3>
+            </div>
+            <button id="openGameAvatarBtn" class="btn btn-accent btn-glow">
+              <span>Choose Body Type in Game Mode</span>
+              <span class="pulse-dot"></span>
+            </button>
+          </div>
+
+          <!-- Category Focus Selector (All, Shirts, Pants) -->
+          <div class="category-focus-container">
+            <span class="focus-label">🎯 Focus View:</span>
+            <div class="focus-btn-group">
+              <button type="button" class="focus-btn active" data-focus="all">✨ All Measurements</button>
+              <button type="button" class="focus-btn" data-focus="shirt">👕 Shirt Sizing (Shoulder & Chest)</button>
+              <button type="button" class="focus-btn" data-focus="pant">👖 Pant / Jeans Sizing (Waist, Hips & Inseam)</button>
+            </div>
+          </div>
+
+          <!-- Quick Jeans Size Auto-Filler Banner -->
+          <div class="pant-quick-presets-box hidden" id="pantQuickSelectBox">
+            <div class="pant-preset-title">
+              <span>👖 Quick Fill by Usual Jeans Waist Size:</span>
+              <small>Tap your standard jeans waist size to auto-set Waist, Hips & Inseam:</small>
+            </div>
+            <div class="jeans-buttons-row">
+              <button type="button" class="jeans-btn" data-jeans="26">26"</button>
+              <button type="button" class="jeans-btn" data-jeans="28">28"</button>
+              <button type="button" class="jeans-btn" data-jeans="30">30"</button>
+              <button type="button" class="jeans-btn active" data-jeans="32">32"</button>
+              <button type="button" class="jeans-btn" data-jeans="34">34"</button>
+              <button type="button" class="jeans-btn" data-jeans="36">36"</button>
+              <button type="button" class="jeans-btn" data-jeans="38">38"</button>
+              <button type="button" class="jeans-btn" data-jeans="40">40"</button>
+            </div>
+          </div>
+
+          <!-- Manual Measurement Inputs -->
+          <div class="measurement-grid">
+            <!-- Gender / Silhouette Preset -->
+            <div class="input-card" data-category="common">
+              <div class="card-header-row">
+                <label class="card-label">Silhouette Type</label>
+              </div>
+              <div class="gender-selector">
+                <button class="gender-btn active" data-gender="unisex">Unisex</button>
+                <button class="gender-btn" data-gender="women">Women</button>
+                <button class="gender-btn" data-gender="men">Men</button>
+              </div>
+            </div>
+
+            <!-- Height (Feet & Inches OR Centimeters) -->
+            <div class="input-card" data-category="common">
+              <div class="card-header-row">
+                <label class="card-label" for="inputHeightFt">Height</label>
+                <div class="mini-unit-pill" data-field="height">
+                  <button type="button" class="mini-unit-btn active" data-unit="ft-in">ft & in</button>
+                  <button type="button" class="mini-unit-btn" data-unit="cm">cm</button>
+                </div>
+              </div>
+              <div class="height-dual-box" id="heightFtInBox">
+                <div class="ft-in-segment">
+                  <input type="number" id="inputHeightFt" value="5" min="3" max="7" step="1">
+                  <span class="unit-badge">ft</span>
+                </div>
+                <div class="ft-in-segment">
+                  <input type="number" id="inputHeightIn" value="8" min="0" max="11" step="1">
+                  <span class="unit-badge">in</span>
+                </div>
+              </div>
+              <div class="stepper-input hidden" id="heightCmBox">
+                <button class="step-btn minus" data-for="inputHeightCm">−</button>
+                <input type="number" id="inputHeightCm" value="172" min="80" max="230" step="1">
+                <button class="step-btn plus" data-for="inputHeightCm">+</button>
+              </div>
+            </div>
+
+            <!-- Weight (lbs or kg) -->
+            <div class="input-card" data-category="common">
+              <div class="card-header-row">
+                <label class="card-label" for="inputWeight">Weight</label>
+                <div class="mini-unit-pill" data-field="weight">
+                  <button type="button" class="mini-unit-btn active" data-unit="lbs">lbs</button>
+                  <button type="button" class="mini-unit-btn" data-unit="kg">kg</button>
+                </div>
+              </div>
+              <div class="stepper-input">
+                <button class="step-btn minus" data-for="inputWeight">−</button>
+                <input type="number" id="inputWeight" value="150" min="40" max="350" step="1">
+                <button class="step-btn plus" data-for="inputWeight">+</button>
+              </div>
+            </div>
+
+            <!-- Chest / Bust -->
+            <div class="input-card highlight-card" data-category="upper" id="cardChest">
+              <div class="card-header-row">
+                <label class="card-label" for="inputChest">🎽 Chest / Bust</label>
+                <div class="mini-unit-pill" data-field="chest">
+                  <button type="button" class="mini-unit-btn active" data-unit="in">in</button>
+                  <button type="button" class="mini-unit-btn" data-unit="cm">cm</button>
+                </div>
+              </div>
+              <div class="stepper-input">
+                <button class="step-btn minus" data-for="inputChest">−</button>
+                <input type="number" id="inputChest" value="38" min="20" max="60" step="0.5">
+                <button class="step-btn plus" data-for="inputChest">+</button>
+              </div>
+            </div>
+
+            <!-- Waist -->
+            <div class="input-card highlight-card" data-category="lower" id="cardWaist">
+              <div class="card-header-row">
+                <label class="card-label" for="inputWaist">👖 Waist</label>
+                <div class="mini-unit-pill" data-field="waist">
+                  <button type="button" class="mini-unit-btn active" data-unit="in">in</button>
+                  <button type="button" class="mini-unit-btn" data-unit="cm">cm</button>
+                </div>
+              </div>
+              <div class="stepper-input">
+                <button class="step-btn minus" data-for="inputWaist">−</button>
+                <input type="number" id="inputWaist" value="32" min="18" max="60" step="0.5">
+                <button class="step-btn plus" data-for="inputWaist">+</button>
+              </div>
+              <p class="field-explainer">Natural waistline / pant waistband circumference</p>
+            </div>
+
+            <!-- Hips -->
+            <div class="input-card" data-category="lower" id="cardHips">
+              <div class="card-header-row">
+                <label class="card-label" for="inputHips">🍑 Hips & Seat</label>
+                <div class="mini-unit-pill" data-field="hips">
+                  <button type="button" class="mini-unit-btn active" data-unit="in">in</button>
+                  <button type="button" class="mini-unit-btn" data-unit="cm">cm</button>
+                </div>
+              </div>
+              <div class="stepper-input">
+                <button class="step-btn minus" data-for="inputHips">−</button>
+                <input type="number" id="inputHips" value="39" min="20" max="65" step="0.5">
+                <button class="step-btn plus" data-for="inputHips">+</button>
+              </div>
+              <p class="field-explainer">Fullest part around glutes & pelvis for pant ease</p>
+            </div>
+
+            <!-- Shoulder -->
+            <div class="input-card" data-category="upper" id="cardShoulder">
+              <div class="card-header-row">
+                <label class="card-label" for="inputShoulder">📐 Shoulder Span</label>
+                <div class="mini-unit-pill" data-field="shoulder">
+                  <button type="button" class="mini-unit-btn active" data-unit="in">in</button>
+                  <button type="button" class="mini-unit-btn" data-unit="cm">cm</button>
+                </div>
+              </div>
+              <div class="stepper-input">
+                <button class="step-btn minus" data-for="inputShoulder">−</button>
+                <input type="number" id="inputShoulder" value="17.5" min="10" max="26" step="0.5">
+                <button class="step-btn plus" data-for="inputShoulder">+</button>
+              </div>
+            </div>
+
+            <!-- Inseam / Torso Length -->
+            <div class="input-card highlight-card" data-category="lower" id="cardInseam">
+              <div class="card-header-row">
+                <label class="card-label" for="inputInseam">📏 Inseam (Leg Length)</label>
+                <div class="mini-unit-pill" data-field="inseam">
+                  <button type="button" class="mini-unit-btn active" data-unit="in">in</button>
+                  <button type="button" class="mini-unit-btn" data-unit="cm">cm</button>
+                </div>
+              </div>
+              <div class="stepper-input">
+                <button class="step-btn minus" data-for="inputInseam">−</button>
+                <input type="number" id="inputInseam" value="30" min="18" max="42" step="0.5">
+                <button class="step-btn plus" data-for="inputInseam">+</button>
+              </div>
+              <p class="field-explainer">Inner leg length from crotch to ankle (standard jeans length)</p>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="action-footer">
+            <button id="profileResetBtn" class="btn btn-secondary">Reset to Defaults</button>
+            <button id="goToGarmentBtn" class="btn btn-primary">
+              <span>Next: Select Product & Size Chart</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ==============================================
+           SCREEN 3: PRODUCT LINK & 2-PHOTO UPLOAD
+      =============================================== -->
+      <section id="garmentScreen" class="view-screen">
+        <div class="screen-card">
+          <div class="screen-header-row">
+            <div>
+              <span class="badge badge-warm">Step 2 of 3</span>
+              <h2 class="section-title">Product & Sizing Source</h2>
+            </div>
+            <!-- Clean Garment Category Switcher -->
+            <div class="category-toggle-wrapper">
+              <div class="category-toggle-container">
+                <button type="button" class="category-pill-btn active" id="btnTypeTop" data-category="top">
+                  <span>👕 Shirt / Top</span>
+                </button>
+                <button type="button" class="category-pill-btn" id="btnTypeBottom" data-category="bottom">
+                  <span>👖 Pants / Bottom</span>
+                </button>
+              </div>
+            </div>
+            <button id="backToSizesBtn" class="btn btn-ghost">← Back to Sizes</button>
+          </div>
+
+          <!-- Dual Source Layout: URL on Left, Size Chart on Right -->
+          <div class="product-input-grid">
+            
+            <!-- Left Column: Product Link -->
+            <div class="panel-box">
+              <div class="panel-title-row">
+                <span class="panel-icon">🔗</span>
+                <h3>Product Link</h3>
+              </div>
+
+              <div class="product-link-row">
+                <div class="input-wrapper full-flex">
+                  <span class="input-icon">🌐</span>
+                  <input type="url" id="productUrlInput" placeholder="Paste product link (e.g. shirt, pants, tee)..." value="">
+                </div>
+                <button id="fetchProductBtn" class="btn btn-secondary">Analyze Link</button>
+              </div>
+            </div>
+
+            <!-- Right Column: Only Size Chart (Upload or Camera Snap) -->
+            <div class="panel-box highlight-border">
+              <div class="panel-title-row">
+                <span class="panel-icon">📏</span>
+                <div>
+                  <h3>Size Chart</h3>
+                </div>
+              </div>
+
+              <!-- Size Chart Upload / Dropzone -->
+              <div class="size-chart-upload-container">
+                <div class="chart-dropzone" id="chartDropArea">
+                  <input type="file" id="chartFileInput" accept="image/*" class="file-input-hidden">
+                  <span class="dropzone-icon">📊</span>
+                  <h4>Upload Size Chart Image</h4>
+                  <p class="dropzone-hint">Drag & drop size chart or brand measurement table</p>
+                  <button type="button" class="btn btn-sm btn-outline" id="browseChartBtn">Browse Image</button>
+                </div>
+
+                <!-- Preview Box after Upload / Snap -->
+                <div class="chart-preview-box hidden" id="chartPreviewBox">
+                  <img id="chartPreviewImg" src="" alt="Size Chart">
+                  <div class="preview-actions">
+                    <span class="preview-status" id="chartVerificationBadge">✓ Uploaded Image Attached</span>
+                    <button type="button" class="btn btn-xs btn-secondary" id="changeChartBtn">Change Photo</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Camera Trigger -->
+              <div class="camera-snap-action-row">
+                <button type="button" id="startCameraBtn" class="btn btn-sm btn-accent btn-glow">
+                  <span>📷 Snap Size Chart with Live Camera</span>
+                </button>
+              </div>
+
+              <!-- Camera Container (Hidden until camera button clicked) -->
+              <div class="camera-zone hidden" id="cameraContainer">
+                <div class="viewfinder-wrapper">
+                  <video id="cameraVideo" autoplay playsinline muted></video>
+                  <canvas id="cameraCanvas" style="display: none;"></canvas>
+                  
+                  <div class="hud-overlay" id="hudOverlay">
+                    <div class="corner-bracket top-left"></div>
+                    <div class="corner-bracket top-right"></div>
+                    <div class="corner-bracket bottom-left"></div>
+                    <div class="corner-bracket bottom-right"></div>
+                    <div class="scan-laser-line"></div>
+                    <div class="hud-tag">ALIGN SIZE CHART INSIDE FRAME</div>
+                  </div>
+                </div>
+
+                <div class="camera-controls">
+                  <button id="snapPhotoBtn" class="btn btn-sm btn-primary">
+                    <span class="shutter-circle"></span>
+                    <span>Capture Size Chart</span>
+                  </button>
+                  <button id="closeCameraBtn" class="btn btn-sm btn-secondary">✕ Close Camera</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- FIT PREFERENCE SELECTOR (Slim, Regular, Relaxed) -->
+          <div class="fit-preference-zone">
+            <div class="pref-header">
+              <span class="badge badge-warm">Fit Style</span>
+              <h3>Fit Preference</h3>
+            </div>
+
+            <div class="fit-cards-grid">
+              <!-- Slim Fit -->
+              <div class="fit-card" data-fit="slim">
+                <div class="fit-visual">
+                  <div class="fit-silhouette slim"></div>
+                </div>
+                <h4>Fitted / Snug</h4>
+                <div class="fit-tag">Tailored Vibe</div>
+              </div>
+
+              <!-- Regular Fit -->
+              <div class="fit-card active" data-fit="regular">
+                <div class="best-badge">Standard</div>
+                <div class="fit-visual">
+                  <div class="fit-silhouette regular"></div>
+                </div>
+                <h4>Correct / Regular</h4>
+                <div class="fit-tag">Everyday Comfort</div>
+              </div>
+
+              <!-- Oversized / Relaxed -->
+              <div class="fit-card" data-fit="oversized">
+                <div class="fit-visual">
+                  <div class="fit-silhouette oversized"></div>
+                </div>
+                <h4>Oversized / Relaxed</h4>
+                <div class="fit-tag">Streetwear / Relaxed</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="action-footer">
+            <button id="backToSizesBtn2" class="btn btn-secondary">← Back to Sizes</button>
+            <button id="calculateMatchBtn" class="btn btn-primary btn-glow">
+              <span class="btn-sparkle">✨</span>
+              <span>Calculate Exact Fit Recommendation</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ==============================================
+           SCREEN 4: EXPLAINABLE SMART MATCH RECOMMENDATION
+      =============================================== -->
+      <section id="resultScreen" class="view-screen">
+        <div class="screen-card result-card-glow">
+          <div class="screen-header-row">
+            <div>
+              <span class="badge badge-success">Match Complete</span>
+              <h2 class="section-title">Your Personalized Size Verdict</h2>
+            </div>
+            <button id="tryAnotherGarmentBtn" class="btn btn-ghost">← Check Another Garment</button>
+          </div>
+
+          <!-- Analyzed Item Summary Header -->
+          <div class="result-product-bar" id="resultProductBar">
+            <span class="product-badge" id="resultProductCategory">👕 Shirt / Top</span>
+            <span class="product-title" id="resultProductTitle">Product Garment</span>
+          </div>
+
+          <!-- HUGE HERO SIZE BANNER (CLEAN & LAZY PROOF) -->
+          <div class="hero-size-banner">
+            <div class="banner-left">
+              <span class="hero-label">RECOMMENDED SIZE FOR YOU</span>
+              <div class="hero-size-highlight" id="heroSizeResult">L</div>
+            </div>
+
+            <div class="banner-right">
+              <div class="lazy-verdict-box">
+                <div class="verdict-icon">💡</div>
+                <div class="verdict-content">
+                  <h4>The Quick Verdict:</h4>
+                  <p id="quickVerdictText">
+                    Based on your <strong>38" chest</strong> and preference for a <strong>Regular fit</strong>, <strong>Size L</strong> provides the ideal fit across the chest and covers comfortably past your beltline.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Size comparison pills -->
+              <div class="alternative-size-row">
+                <span class="alt-label">Compare other sizes:</span>
+                <div class="size-switch-group" id="sizeSwitchGroup">
+                  <button class="size-pill-btn" data-size="S">S</button>
+                  <button class="size-pill-btn" data-size="M">M</button>
+                  <button class="size-pill-btn active" data-size="L">L (Recommended)</button>
+                  <button class="size-pill-btn" data-size="XL">XL</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GRANULAR BODY FIT BREAKDOWN (CLEAN: LOOSE / FITTED / SNUG ONLY) -->
+          <div class="breakdown-section">
+            <div class="breakdown-header">
+              <div class="breakdown-header-left">
+                <div class="badge badge-warm" id="breakdownBadge">Upper Body Measurements (Shoulder to Waist Only)</div>
+                <h3 id="breakdownTitle">Shirt Fit Breakdown (Shoulders to Waist Only)</h3>
+              </div>
+              <div class="result-view-toggle">
+                <button type="button" class="result-toggle-btn active" id="btnResultToggleTop">👕 Upper Body (Shirt)</button>
+                <button type="button" class="result-toggle-btn" id="btnResultToggleBottom">👖 Lower Body (Pant)</button>
+              </div>
+            </div>
+
+            <div class="breakdown-grid">
+              
+              <!-- 1. Shoulders (Topmost Torso - Shirt Only) -->
+              <div class="area-card" id="cardShoulderFit">
+                <div class="area-top">
+                  <div class="area-title-wrap">
+                    <span class="area-icon">📐</span>
+                    <div>
+                      <span class="area-name">Shoulder Span</span>
+                      <div class="measure-comparison" id="shoulderComparisonText">Your 17.5" vs Garment 18.2"</div>
+                    </div>
+                  </div>
+                  <div class="status-pill status-accurate" id="shoulderStatusPill">
+                    <span class="pill-dot"></span>
+                    <span id="shoulderStatusLabel">Fitted</span>
+                  </div>
+                </div>
+                <div class="fit-gauge-bar">
+                  <div class="gauge-fill accurate" id="shoulderGaugeFill" style="width: 68%;"></div>
+                </div>
+              </div>
+
+              <!-- 2. Chest (Upper Torso - Shirt Only) -->
+              <div class="area-card" id="cardChestFit">
+                <div class="area-top">
+                  <div class="area-title-wrap">
+                    <span class="area-icon">🎽</span>
+                    <div>
+                      <span class="area-name">Chest / Bust</span>
+                      <div class="measure-comparison" id="chestComparisonText">Your 38.0" vs Garment 42.0"</div>
+                    </div>
+                  </div>
+                  <div class="status-pill status-accurate" id="chestStatusPill">
+                    <span class="pill-dot"></span>
+                    <span id="chestStatusLabel">Fitted</span>
+                  </div>
+                </div>
+                <div class="fit-gauge-bar">
+                  <div class="gauge-fill accurate" id="chestGaugeFill" style="width: 72%;"></div>
+                </div>
+              </div>
+
+              <!-- 3. Waist (Waistline Boundary - Both Top and Bottom) -->
+              <div class="area-card" id="cardWaistFit">
+                <div class="area-top">
+                  <div class="area-title-wrap">
+                    <span class="area-icon">👖</span>
+                    <div>
+                      <span class="area-name">Waist</span>
+                      <div class="measure-comparison" id="waistComparisonText">Your 32.0" vs Garment 36.5"</div>
+                    </div>
+                  </div>
+                  <div class="status-pill status-loose" id="waistStatusPill">
+                    <span class="pill-dot"></span>
+                    <span id="waistStatusLabel">Loose</span>
+                  </div>
+                </div>
+                <div class="fit-gauge-bar">
+                  <div class="gauge-fill loose" id="waistGaugeFill" style="width: 85%;"></div>
+                </div>
+              </div>
+
+              <!-- 4. Hips & Seat (Pelvic Area - Pants Only, Below Waist) -->
+              <div class="area-card" id="cardHipFit">
+                <div class="area-top">
+                  <div class="area-title-wrap">
+                    <span class="area-icon" id="hipAreaIcon">🍑</span>
+                    <div>
+                      <span class="area-name" id="hipAreaName">Hips & Seat</span>
+                      <div class="measure-comparison" id="hipComparisonText">Your 39.0" vs Garment 40.5"</div>
+                    </div>
+                  </div>
+                  <div class="status-pill status-accurate" id="hipStatusPill">
+                    <span class="pill-dot"></span>
+                    <span id="hipStatusLabel">Fitted</span>
+                  </div>
+                </div>
+                <div class="fit-gauge-bar">
+                  <div class="gauge-fill accurate" id="hipGaugeFill" style="width: 72%;"></div>
+                </div>
+              </div>
+
+              <!-- 5. Vertical Length (Shirt Torso Length for Shirt / Leg Inseam for Pants) -->
+              <div class="area-card" id="cardLengthFit">
+                <div class="area-top">
+                  <div class="area-title-wrap">
+                    <span class="area-icon">📏</span>
+                    <div>
+                      <span class="area-name" id="lengthAreaName">Shirt Length & Coverage</span>
+                      <div class="measure-comparison" id="lengthComparisonText">28.0" Garment Length</div>
+                    </div>
+                  </div>
+                  <div class="status-pill status-accurate" id="lengthStatusPill">
+                    <span class="pill-dot"></span>
+                    <span id="lengthStatusLabel">Fitted</span>
+                  </div>
+                </div>
+                <div class="fit-gauge-bar">
+                  <div class="gauge-fill accurate" id="lengthGaugeFill" style="width: 70%;"></div>
+                </div>
+              </div>
+                </div>
+              </div>
+
+              <!-- 6. Stretch & Fabric Behavior -->
+              <div class="area-card fabric-card" id="cardFabricFit">
+                <div class="area-top">
+                  <div class="area-title-wrap">
+                    <span class="area-icon">🧵</span>
+                    <div>
+                      <span class="area-name">Fabric & Stretch</span>
+                      <div class="measure-comparison" id="fabricComparisonText">Standard Woven</div>
+                    </div>
+                  </div>
+                  <div class="status-pill status-neutral">
+                    <span class="pill-dot"></span>
+                    <span>Woven</span>
+                  </div>
+                </div>
+                <div class="fit-gauge-bar">
+                  <div class="gauge-fill neutral" style="width: 30%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          <!-- ENVIRONMENTAL IMPACT BANNER (VNRVJIET SLIDE 10) -->
+          <div class="eco-benefit-banner">
+            <div class="eco-icon">🌱</div>
+            <div class="eco-content">
+              <h4>Design for Environment</h4>
+              <p>By finding your accurate size on the first try, you eliminate reverse shipping, reducing cardboard waste and saving approximately <strong>2.4 kg of CO₂</strong> emissions.</p>
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div class="action-footer">
+            <button id="copyRecommendationBtn" class="btn btn-secondary">
+              <span>📋 Copy Size Summary</span>
+            </button>
+            <button id="checkAnotherBtn" class="btn btn-primary">
+              <span>Try Another Product</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==============================================
+         GAME AVATAR CREATOR MODAL
+    =============================================== -->
+    <div class="modal-overlay hidden" id="gameAvatarModal">
+      <div class="modal-window game-creator-window">
+        <div class="modal-header">
+          <div class="game-header-badge">
+            <span class="game-pad-icon">🎮</span>
+            <span>RPG CHARACTER CREATOR • BODY PRESET SELECTOR</span>
+          </div>
+          <button class="modal-close-btn" id="closeAvatarModalBtn">✕</button>
+        </div>
+
+        <div class="modal-body game-creator-grid">
+          
+          <!-- Left: 3D/Interactive SVG Mannequin Display -->
+          <div class="mannequin-display-zone">
+            <div class="avatar-stage">
+              <div class="stage-pedestal"></div>
+              
+              <!-- DYNAMIC INTERACTIVE SVG AVATAR -->
+              <svg id="mannequinSvg" class="mannequin-svg" viewBox="0 0 320 480" xmlns="http://www.w3.org/2000/svg">
+                <!-- Drop shadow filter -->
+                <defs>
+                  <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#e07a5f" flood-opacity="0.3"/>
+                  </filter>
+                  <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fdfbf7"/>
+                    <stop offset="50%" stop-color="#f4e0d4"/>
+                    <stop offset="100%" stop-color="#e07a5f"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Head -->
+                <circle cx="160" cy="55" r="26" class="avatar-head" fill="#F4A261" />
+                <path d="M152 48 Q160 52 168 48" stroke="#3D405B" stroke-width="2" fill="none" opacity="0.6"/>
+
+                <!-- Neck -->
+                <path d="M152 80 L152 94 L168 94 L168 80 Z" fill="#E07A5F" opacity="0.8"/>
+
+                <!-- Torso Body Shape (Dynamically morphed by JS) -->
+                <!-- Points: Neck L, Neck R, Shoulder R, Chest R, Waist R, Hip R, Crotch, Hip L, Waist L, Chest L, Shoulder L -->
+                <path id="avatarTorsoPath" class="avatar-torso" 
+                      d="M152 94 L168 94 L220 115 L215 170 L195 230 L212 300 L160 320 L108 300 L125 230 L105 170 L100 115 Z" 
+                      fill="url(#bodyGrad)" stroke="#E07A5F" stroke-width="3" filter="url(#softGlow)"/>
+
+                <!-- Dynamic Measurement Indicator Rings/Lines -->
+                <!-- Chest line -->
+                <g id="indicatorChest" class="mannequin-indicator" transform="translate(0,0)">
+                  <line x1="80" y1="170" x2="240" y2="170" stroke="#E07A5F" stroke-dasharray="4,4" stroke-width="1.8"/>
+                  <circle cx="240" cy="170" r="4" fill="#E07A5F"/>
+                  <text x="248" y="174" class="hud-text" id="avatarHudChest">Chest: 38"</text>
+                </g>
+
+                <!-- Waist line -->
+                <g id="indicatorWaist" class="mannequin-indicator" transform="translate(0,0)">
+                  <line x1="100" y1="230" x2="220" y2="230" stroke="#F4A261" stroke-dasharray="4,4" stroke-width="1.8"/>
+                  <circle cx="220" cy="230" r="4" fill="#F4A261"/>
+                  <text x="228" y="234" class="hud-text" id="avatarHudWaist">Waist: 32"</text>
+                </g>
+
+                <!-- Hip line -->
+                <g id="indicatorHips" class="mannequin-indicator" transform="translate(0,0)">
+                  <line x1="85" y1="300" x2="235" y2="300" stroke="#81B29A" stroke-dasharray="4,4" stroke-width="1.8"/>
+                  <circle cx="235" cy="300" r="4" fill="#81B29A"/>
+                  <text x="243" y="304" class="hud-text" id="avatarHudHips">Hips: 39"</text>
+                </g>
+
+                <!-- Legs (Dynamically morphed by Inseam & Thigh fullness) -->
+                <path id="avatarLegLeft" class="avatar-leg" d="M108 300 L122 445 L145 445 L160 320 Z" fill="#F4E0D4" stroke="#E07A5F" stroke-width="2.5"/>
+                <path id="avatarLegRight" class="avatar-leg" d="M212 300 L198 445 L175 445 L160 320 Z" fill="#F4E0D4" stroke="#E07A5F" stroke-width="2.5"/>
+
+                <!-- Inseam Leg Length HUD line -->
+                <g id="indicatorInseam" class="mannequin-indicator" transform="translate(0,0)">
+                  <line x1="160" y1="320" x2="160" y2="445" stroke="#4E8765" stroke-dasharray="3,3" stroke-width="2"/>
+                  <circle cx="160" cy="445" r="4" fill="#4E8765"/>
+                  <text x="168" y="380" class="hud-text hud-leg-text" id="avatarHudInseam">Inseam: 30.5"</text>
+                </g>
+              </svg>
+            </div>
+
+            <div class="avatar-stats-card">
+              <div class="stat-pill">
+                <span class="stat-name">Estimated Size:</span>
+                <strong id="avatarEstimatedTag">Medium (M)</strong>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-name">Base Size:</span>
+                <strong id="avatarBuildName">Size M (Medium)</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Game Preset Archetypes & Proportional Sliders -->
+          <div class="game-controls-zone">
+            
+            <div class="archetypes-section">
+              <div class="game-type-toggle-row">
+                <h4 class="game-section-title">Step A: Choose Usual Size</h4>
+                <div class="game-category-pill-group">
+                  <button type="button" class="game-cat-btn active" id="btnGameCategoryTop" data-mode="top">👕 Shirts (XXS-3XL)</button>
+                  <button type="button" class="game-cat-btn" id="btnGameCategoryPant" data-mode="pant">👖 Pants / Jeans (26"-40")</button>
+                </div>
+              </div>
+
+              <!-- Top Alpha Sizes Grid -->
+              <div class="size-only-grid" id="gridGameTopSizes">
+                <div class="archetype-card size-pill-card" data-archetype="xxs">
+                  <span class="size-name">XXS</span>
+                </div>
+                <div class="archetype-card size-pill-card" data-archetype="xs">
+                  <span class="size-name">XS</span>
+                </div>
+                <div class="archetype-card size-pill-card" data-archetype="s">
+                  <span class="size-name">S</span>
+                </div>
+                <div class="archetype-card size-pill-card active" data-archetype="m">
+                  <span class="size-name">M</span>
+                </div>
+                <div class="archetype-card size-pill-card" data-archetype="l">
+                  <span class="size-name">L</span>
+                </div>
+                <div class="archetype-card size-pill-card" data-archetype="xl">
+                  <span class="size-name">XL</span>
+                </div>
+                <div class="archetype-card size-pill-card" data-archetype="xxl">
+                  <span class="size-name">XXL</span>
+                </div>
+                <div class="archetype-card size-pill-card" data-archetype="xxxl">
+                  <span class="size-name">3XL</span>
+                </div>
+              </div>
+
+              <!-- Pant / Jeans Waist Sizes Grid -->
+              <div class="size-only-grid hidden" id="gridGamePantSizes">
+                <div class="archetype-card size-pill-card pant-pill-card" data-pant-preset="26">
+                  <span class="size-name">26"</span>
+                  <small class="pant-sub-label">XXS • 28L</small>
+                </div>
+                <div class="archetype-card size-pill-card pant-pill-card" data-pant-preset="28">
+                  <span class="size-name">28"</span>
+                  <small class="pant-sub-label">XS • 29L</small>
+                </div>
+                <div class="archetype-card size-pill-card pant-pill-card" data-pant-preset="30">
+                  <span class="size-name">30"</span>
+                  <small class="pant-sub-label">S • 29.5L</small>
+                </div>
+                <div class="archetype-card size-pill-card pant-pill-card active" data-pant-preset="32">
+                  <span class="size-name">32"</span>
+                  <small class="pant-sub-label">M • 30.5L</small>
+                </div>
+                <div class="archetype-card size-pill-card pant-pill-card" data-pant-preset="34">
+                  <span class="size-name">34"</span>
+                  <small class="pant-sub-label">L • 31.5L</small>
+                </div>
+                <div class="archetype-card size-pill-card pant-pill-card" data-pant-preset="36">
+                  <span class="size-name">36"</span>
+                  <small class="pant-sub-label">XL • 32L</small>
+                </div>
+                <div class="archetype-card size-pill-card pant-pill-card" data-pant-preset="38">
+                  <span class="size-name">38"</span>
+                  <small class="pant-sub-label">2XL • 32.5L</small>
+                </div>
+                <div class="archetype-card size-pill-card pant-pill-card" data-pant-preset="40">
+                  <span class="size-name">40"</span>
+                  <small class="pant-sub-label">3XL • 33L</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fine-Tuning Sliders -->
+            <div class="sliders-section">
+              <h4 class="game-section-title">Step B: Fine-Tune Proportions</h4>
+
+              <div class="game-slider-row">
+                <div class="slider-header">
+                  <span>Shoulder Width</span>
+                  <span id="sliderShoulderVal">17.5"</span>
+                </div>
+                <input type="range" id="sliderShoulder" min="10" max="24" step="0.5" value="17.5">
+              </div>
+
+              <div class="game-slider-row">
+                <div class="slider-header">
+                  <span>Chest Fullness</span>
+                  <span id="sliderChestVal">38.0"</span>
+                </div>
+                <input type="range" id="sliderChest" min="20" max="56" step="0.5" value="38">
+              </div>
+
+              <div class="game-slider-row">
+                <div class="slider-header">
+                  <span>Waist Width</span>
+                  <span id="sliderWaistVal">32.0"</span>
+                </div>
+                <input type="range" id="sliderWaist" min="18" max="52" step="0.5" value="32">
+              </div>
+
+              <div class="game-slider-row">
+                <div class="slider-header">
+                  <span>Hip & Seat Width</span>
+                  <span id="sliderHipsVal">39.0"</span>
+                </div>
+                <input type="range" id="sliderHips" min="20" max="58" step="0.5" value="39">
+              </div>
+
+              <div class="game-slider-row highlight-slider-row" id="rowSliderInseam">
+                <div class="slider-header">
+                  <span>👖 Inseam (Leg Length: Crotch to Ankle)</span>
+                  <span id="sliderInseamVal">30.5"</span>
+                </div>
+                <input type="range" id="sliderInseam" min="24" max="38" step="0.5" value="30.5">
+                <span class="slider-hint">Standard inner leg length for height ~5'8"</span>
+              </div>
+
+              <div class="game-slider-row" id="rowSliderThigh">
+                <div class="slider-header">
+                  <span>🦵 Thigh Fullness / Leg Build</span>
+                  <span id="sliderThighVal">23.0" (Regular)</span>
+                </div>
+                <input type="range" id="sliderThigh" min="18" max="32" step="0.5" value="23">
+              </div>
+            </div>
+
+            <!-- Apply to Profile Button -->
+            <div class="game-modal-footer">
+              <button id="applyAvatarSizesBtn" class="btn btn-primary btn-block btn-glow">
+                <span>✓ Save Avatar Measurements to Profile</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Popup -->
+    <div id="toastNotification" class="toast-popup hidden">
+      <span class="toast-icon">✨</span>
+      <span class="toast-msg" id="toastMessage">Measurements saved!</span>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
